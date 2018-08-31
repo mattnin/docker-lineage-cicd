@@ -91,7 +91,7 @@ for branch in ${BRANCH_NAME//,/ }; do
     echo ">> [$(date)] Devices: $devices"
 
     # Remove previous changes of vendor/cm, vendor/lineage and frameworks/base (if they exist)
-    for path in "vendor/cm" "vendor/lineage" "frameworks/base"; do
+    for path in "vendor/cm" "vendor/lineage" "frameworks/base" "kernel/google/marlin"; do
       if [ -d "$path" ]; then
         cd "$path"
         git reset -q --hard
@@ -293,9 +293,16 @@ for branch in ${BRANCH_NAME//,/ }; do
         fi
 
         # Start the build
-        echo ">> [$(date)] Starting build for $codename, $branch branch" | tee -a "$DEBUG_LOG"
         build_successful=false
-        if brunch $codename &>> "$DEBUG_LOG"; then
+        echo ">> [$(date)] Downloading kernel and vendor for $codename"
+        if breakfast $codename &>> "$DEBUG_LOG"; then
+          # Apply SultanXDA's Safetynet Patch
+          cd kernel/google/marlin
+          echo ">> [$(date)] Applying SultanXDA Safetynet Patch"
+          patch --quiet -p1 -i "/root/kernel_patches/safetynet.patch"
+          cd ../../..
+          echo ">> [$(date)] Starting build for $codename, $branch branch" | tee -a "$DEBUG_LOG"
+          brunch $codename &>> "$DEBUG_LOG"
           currentdate=$(date +%Y%m%d)
           if [ "$builddate" != "$currentdate" ]; then
             find out/target/product/$codename -maxdepth 1 -name "lineage-*-$currentdate-*.zip*" -type f -exec sh /root/fix_build_date.sh {} $currentdate $builddate \; &>> "$DEBUG_LOG"
