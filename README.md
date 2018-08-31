@@ -1,6 +1,7 @@
 # docker-lineage-cicd
 
-Docker microservice for LineageOS Continuous Integration and Continous Deployment
+Docker microservice for LineageOS Continuous Integration and Continous Deployment. This docker is specifically
+for Sailfish and will fail for any other device. Forked from lineageos4microg and merged from SultanXDA.
 
 ## Why Docker?
 
