@@ -296,11 +296,14 @@ for branch in ${BRANCH_NAME//,/ }; do
         build_successful=false
         echo ">> [$(date)] Downloading kernel and vendor for $codename"
         if breakfast $codename &>> "$DEBUG_LOG"; then
-          # Apply SultanXDA's Safetynet Patch
-          cd kernel/google/marlin
+         
+          # Applying Safetynet Kernel Patches
+          cd kernel/google/marlin/fs/proc
           echo ">> [$(date)] Applying SultanXDA Safetynet Patch"
-          patch --quiet -p1 -i "/root/kernel_patches/safetynet.patch"
+          git apply "/root/kernel_patches/safetynet.patch"
           cd ../../..
+
+          # Commencing Build
           echo ">> [$(date)] Starting build for $codename, $branch branch" | tee -a "$DEBUG_LOG"
           brunch $codename &>> "$DEBUG_LOG"
           currentdate=$(date +%Y%m%d)
